@@ -18,5 +18,21 @@ service cloud.firestore {
         && request.resource.data.uid == request.auth.uid;
       allow update, delete: if false;
     }
+
+    match /resumes/{resumeId} {
+      allow read: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.fileName is string
+        && request.resource.data.fileSize is int
+        && request.resource.data.status == 'ready'
+        && request.resource.data.extractedText is string
+        && request.resource.data.extractedText.size() >= 50
+        && request.resource.data.textPreview is string;
+      allow update: if false;
+      allow delete: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+    }
   }
 }

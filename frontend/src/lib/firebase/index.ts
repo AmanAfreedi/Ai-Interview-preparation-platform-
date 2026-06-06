@@ -4,4 +4,9 @@ export {
   isFirebaseConfigured,
   type FirebaseEnvConfig,
 } from './env'
-export { getFirebaseApp, getFirebaseAuth, getFirestoreDb } from './app'
+export {
+  getFirebaseApp,
+  getFirebaseAuth,
+  getFirebaseStorage,
+  getFirestoreDb,
+} from './app'

@@ -27,7 +27,7 @@ AI-powered interview preparation and career guidance platform for students.
 | AI | CrewAI multi-agent architecture |
 | Database | Firebase Firestore |
 | Auth | Firebase Authentication |
-| File storage | Firebase Storage |
+| File storage | Firebase Storage (other assets; resumes store text in Firestore only) |
 
 ---
 
@@ -44,7 +44,7 @@ Firebase (Auth, Firestore, Storage)
 ```
 
 - Frontend talks to **FastAPI** for AI and business logic.
-- Firebase handles **auth**, **persistence**, and **file uploads**.
+- Firebase handles **auth** and **persistence**. Resume PDFs are parsed in the browser; only **extracted text** is saved to Firestore.
 - Do not call CrewAI directly from the frontend.
 
 ---
@@ -63,7 +63,8 @@ ai-study-platform/
 │       ├── lib/            ← firebase, api (future)
 │       ├── pages/
 │       └── stores/         ← Zustand
-└── backend/                ← FastAPI (not yet created)
+├── backend/                ← FastAPI + CrewAI (skill gap started)
+└── docs/                   ← CrewAI copy-paste prompts (e.g. CREWAI_SKILL_GAP_PROMPTS.md)
 ```
 
 ---
@@ -74,8 +75,8 @@ ai-study-platform/
 |---|---------|--------|
 | 1 | Authentication (signup, login, logout, protected routes) | ✅ Frontend done |
 | 2 | Dashboard (progress, scores, feedback history) | 🟡 Shell / placeholders |
-| 3 | Resume upload (PDF → text → metadata) | ⬜ Not started |
-| 4 | Skill gap analysis (resume + JD → gaps, strengths) | ⬜ Not started |
+| 3 | Resume upload (PDF → text in Firestore) | ✅ Frontend (text only, no PDF storage) |
+| 4 | Skill gap analysis (resume + JD → gaps, strengths) | 🟡 Backend + UI; add CrewAI AMP URL + token |
 | 5 | AI roadmap (company, role, date, missing skills) | ⬜ Not started |
 | 6 | Quiz generator (MCQ, coding, topic-based) | ⬜ Not started |
 | 7 | Mock interview (technical, HR, AI feedback) | ⬜ Not started |
@@ -199,3 +200,5 @@ npx shadcn@latest add <name>   # add UI component
 | Date | Note |
 |------|------|
 | 2026-05-22 | Frontend foundation: Tailwind, shadcn, Firebase auth/Firestore setup, routing, sidebar layout, dashboard shell, Zustand auth store |
+| 2026-05-24 | Resume upload: Firestore `resumes` with `extractedText`, client PDF parsing (pdfjs), no Storage; `/resume` page |
+| 2026-06-03 | Skill gap: FastAPI `/api/skill-gap/analyze`, CrewAI AMP client (Option B), `/skill-gap` page, `docs/CREWAI_AMP_SETUP.md` |

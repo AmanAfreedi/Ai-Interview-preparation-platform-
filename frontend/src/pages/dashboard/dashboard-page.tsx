@@ -21,12 +21,13 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { useAuth } from '@/hooks/use-auth'
+import { useResumes } from '@/hooks/use-resumes'
 import { cn } from '@/lib/utils'
 
 const quickActions = [
   {
     title: 'Upload Resume',
-    description: 'Add your PDF resume for AI analysis',
+    description: 'Parse a PDF and save resume text for AI analysis',
     href: '/resume',
     icon: FileText,
     accent: 'from-violet-500/15 to-indigo-500/5',
@@ -70,6 +71,12 @@ const quickActions = [
 
 const stats = [
   {
+    label: 'Resumes',
+    valueKey: 'resumes' as const,
+    icon: FileText,
+    hint: 'Uploaded PDFs',
+  },
+  {
     label: 'Roadmaps',
     value: '—',
     icon: BarChart3,
@@ -97,8 +104,16 @@ const stats = [
 
 export function DashboardPage() {
   const { user, profile } = useAuth()
+  const { resumes } = useResumes()
   const displayName =
     profile?.username ?? user?.email?.split('@')[0] ?? 'there'
+
+  function getStatValue(stat: (typeof stats)[number]): string {
+    if ('valueKey' in stat && stat.valueKey === 'resumes') {
+      return resumes.length > 0 ? String(resumes.length) : '—'
+    }
+    return stat.value ?? '—'
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-8">
@@ -149,7 +164,9 @@ export function DashboardPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-semibold tabular-nums">{stat.value}</p>
+                <p className="text-3xl font-semibold tabular-nums">
+                  {getStatValue(stat)}
+                </p>
                 <p className="mt-1 text-xs text-muted-foreground">{stat.hint}</p>
               </CardContent>
             </Card>
