@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Render Blueprint — backend (FastAPI)
 # https://render.com/docs/blueprint-spec
 services:
@@ -20,3 +21,15 @@ services:
         sync: false
       - key: CREWAI_SKILL_GAP_BEARER_TOKEN
         sync: false
+=======
+services:
+  - type: web
+    name: ai-interview-backend
+    runtime: python
+    runtimeVersion: 3.12
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: true
+>>>>>>> 287c2f71d022110a2043f1ca3b84eadc0189ca6c
