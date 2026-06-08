@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException
 
 from app.clients.crewai_amp import CrewAIAmpError
 from app.config import get_settings
-from app.crews.skill_gap.crew import run_skill_gap_crew
 from app.crews.skill_gap.mock import mock_skill_gap_analysis
 from app.crews.skill_gap.remote import run_skill_gap_via_crewai_amp
 from app.models.skill_gap import SkillGapAnalyzeRequest, SkillGapAnalyzeResponse
@@ -19,7 +18,6 @@ def skill_gap_service_status() -> dict[str, object]:
     payload: dict[str, object] = {
         "provider": provider,
         "crewai_amp_configured": settings.crewai_amp_configured,
-        "local_openai_configured": bool(settings.openai_api_key.strip()),
         "mock_mode": provider == "mock",
     }
 
@@ -52,38 +50,23 @@ def analyze_skill_gap(body: SkillGapAnalyzeRequest) -> SkillGapAnalyzeResponse:
     job_description = body.job_description.strip()
 
     try:
-        if provider == "crewai_amp":
-            if not settings.crewai_amp_configured:
-                raise HTTPException(
-                    status_code=503,
-                    detail=(
-                        "CrewAI AMP is not configured. Set CREWAI_SKILL_GAP_BASE_URL and "
-                        "CREWAI_SKILL_GAP_BEARER_TOKEN in backend/.env (from your crew's "
-                        "Status tab on app.crewai.com)."
-                    ),
-                )
-            analysis = run_skill_gap_via_crewai_amp(
-                settings,
-                resume_text=resume_text,
-                job_description=job_description,
-                candidate_name=body.candidate_name,
-                position_title=body.position_title,
+        if not settings.crewai_amp_configured:
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "CrewAI AMP is not configured. Set CREWAI_SKILL_GAP_BASE_URL and "
+                    "CREWAI_SKILL_GAP_BEARER_TOKEN in backend/.env (from your crew's "
+                    "Status tab on app.crewai.com)."
+                ),
             )
-        else:
-            if not settings.openai_api_key.strip():
-                raise HTTPException(
-                    status_code=503,
-                    detail=(
-                        "Local CrewAI is not configured. Set OPENAI_API_KEY or switch to "
-                        "SKILL_GAP_PROVIDER=crewai_amp with your AMP URL and bearer token."
-                    ),
-                )
-            analysis = run_skill_gap_crew(
-                resume_text=resume_text,
-                job_description=job_description,
-                candidate_name=body.candidate_name,
-                position_title=body.position_title,
-            )
+        
+        analysis = run_skill_gap_via_crewai_amp(
+            settings,
+            resume_text=resume_text,
+            job_description=job_description,
+            candidate_name=body.candidate_name,
+            position_title=body.position_title,
+        )
     except CrewAIAmpError as exc:
         status = exc.status_code if exc.status_code and exc.status_code < 500 else 502
         raise HTTPException(status_code=status, detail=str(exc)) from exc
