@@ -1,0 +1,22 @@
+# Render Blueprint — backend (FastAPI)
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: ai-interview-preparation-platform
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SKILL_GAP_PROVIDER
+        value: crewai_amp
+      - key: CORS_ORIGINS
+        value: http://localhost:5173,http://127.0.0.1:5173,https://stalwart-macaron-915ce6.netlify.app
+      - key: CREWAI_AMP_POLL_INTERVAL_SECONDS
+        value: "2"
+      - key: CREWAI_AMP_POLL_TIMEOUT_SECONDS
+        value: "300"
+      - key: CREWAI_SKILL_GAP_BASE_URL
+        sync: false
+      - key: CREWAI_SKILL_GAP_BEARER_TOKEN
+        sync: false

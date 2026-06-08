@@ -150,9 +150,18 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 # VITE_FIREBASE_MEASUREMENT_ID=  (optional)
 
-# Future — FastAPI base URL
-# VITE_API_URL=http://localhost:8000
+# FastAPI backend (Render)
+VITE_API_URL=https://ai-interview-preparation-platform-9p5u.onrender.com
 ```
+
+### Production URLs
+
+| Service | URL |
+|---------|-----|
+| Frontend (Netlify) | https://stalwart-macaron-915ce6.netlify.app |
+| Backend (Render) | https://ai-interview-preparation-platform-9p5u.onrender.com |
+
+Backend `CORS_ORIGINS` must include the Netlify origin (no trailing slash). See `backend/.env.example` and `render.yaml`.
 
 ---
 
@@ -202,3 +211,4 @@ npx shadcn@latest add <name>   # add UI component
 | 2026-05-22 | Frontend foundation: Tailwind, shadcn, Firebase auth/Firestore setup, routing, sidebar layout, dashboard shell, Zustand auth store |
 | 2026-05-24 | Resume upload: Firestore `resumes` with `extractedText`, client PDF parsing (pdfjs), no Storage; `/resume` page |
 | 2026-06-03 | Skill gap: FastAPI `/api/skill-gap/analyze`, CrewAI AMP client (Option B), `/skill-gap` page, `docs/CREWAI_AMP_SETUP.md` |
+| 2026-06-06 | Production API: `VITE_API_URL` → Render backend `ai-interview-preparation-platform-9p5u.onrender.com` |

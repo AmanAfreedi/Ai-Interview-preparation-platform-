@@ -1,4 +1,5 @@
-const DEFAULT_API_URL = 'http://localhost:8000'
+const DEFAULT_API_URL =
+  'https://ai-interview-preparation-platform-9p5u.onrender.com'
 
 export function getApiBaseUrl(): string {
   const url = import.meta.env.VITE_API_URL?.trim()

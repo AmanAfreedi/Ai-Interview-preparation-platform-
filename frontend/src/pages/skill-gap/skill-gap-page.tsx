@@ -78,7 +78,7 @@ export function SkillGapPage() {
       } else if (err instanceof Error) {
         setError(
           err.message.includes('fetch')
-            ? `Could not reach the API at ${getApiBaseUrl()}. Start the backend with uvicorn.`
+            ? `Could not reach the API at ${getApiBaseUrl()}. Check that the backend is running.`
             : err.message,
         )
       } else {
@@ -186,9 +186,7 @@ export function SkillGapPage() {
           </Button>
 
           <p className="text-xs text-muted-foreground">
-            API: {getApiBaseUrl()} — set{' '}
-            <code className="rounded bg-muted px-1">VITE_API_URL</code> in{' '}
-            <code className="rounded bg-muted px-1">.env.local</code> if needed.
+            API: {getApiBaseUrl()}
           </p>
         </CardContent>
       </Card>

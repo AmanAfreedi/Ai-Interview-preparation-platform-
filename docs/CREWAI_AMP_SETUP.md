@@ -34,7 +34,7 @@ cd backend
 uvicorn app.main:app --reload --port 8000
 ```
 
-Open: **http://localhost:8000/api/skill-gap/status**
+Open: **https://ai-interview-preparation-platform-9p5u.onrender.com/api/skill-gap/status** (or `http://localhost:8000/...` when running locally)
 
 You should see:
 
@@ -119,6 +119,9 @@ The last task on AMP must return JSON matching:
 ## Deploy checklist
 
 - [ ] Crew deployed on AMP (Status shows live URL)
-- [ ] Bearer token in `backend/.env` (never commit `.env`)
+- [ ] Bearer token in `backend/.env` / Render env (never commit `.env`)
 - [ ] `GET /api/skill-gap/status` returns `Healthy`
-- [ ] One successful test from `/skill-gap` page
+- [ ] CORS on Render includes `https://stalwart-macaron-915ce6.netlify.app`
+- [ ] Netlify build has `VITE_API_URL` → Render backend URL
+- [ ] Firebase Auth → Authorized domains includes `stalwart-macaron-915ce6.netlify.app`
+- [ ] One successful test from live `/skill-gap` page

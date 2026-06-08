@@ -1,0 +1,16 @@
+# Netlify — frontend (React / Vite)
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  VITE_API_URL = "https://ai-interview-preparation-platform-9p5u.onrender.com"
+
+# SPA client-side routing (React Router)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
