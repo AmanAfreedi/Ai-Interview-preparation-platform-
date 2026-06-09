@@ -62,25 +62,39 @@ This project sends:
 
 Your crew tasks must use these variable names in task descriptions, e.g. `{resume_text}` and `{job_description}`.
 
-### Important: register all inputs on AMP
+### Critical: register resume + job description on AMP
 
-If `GET /inputs` only returns `candidate_name` and `position_title`, your crew **will not receive the resume or job description** even when the API sends them.
+**Current issue (verified):** `/inputs` returns only:
 
-In CrewAI Studio, add these as **crew inputs**:
+```json
+["position_title", "candidate_name"]
+```
 
-- `resume_text`
-- `job_description`
+The app **does** send resume text and job description, but CrewAI AMP **drops** any input not declared on the crew. Agents then respond with *"Please provide the resume..."* and a useless `0` match score.
 
-Then reference them in every task that needs them:
+**Fix in CrewAI Studio (required for Option B):**
+
+1. Open your Skill Gap crew → **Inputs** (or crew variables)
+2. Add:
+   - `resume_text`
+   - `job_description`
+3. Edit **every task** that needs them, e.g. Task 1:
 
 ```
+Candidate: {candidate_name}
+Role: {position_title}
+
 --- RESUME ---
 {resume_text}
+
 --- JOB DESCRIPTION ---
 {job_description}
 ```
 
-Redeploy the crew after saving. `/inputs` should then list all four variables.
+4. **Redeploy** to AMP
+5. Confirm: `GET https://your-crew.crewai.com/inputs` lists all **four** keys
+
+**Temporary workaround:** Add `OPENAI_API_KEY` on Render — the backend will auto-fallback to the local 3-agent crew when AMP inputs are incomplete.
 
 ## Expected final JSON output
 
