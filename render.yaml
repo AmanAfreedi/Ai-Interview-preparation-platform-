@@ -2,14 +2,12 @@ services:
   - type: web
     name: ai-interview-preparation-platform
     runtime: python
-    runtimeVersion: 3.11.0
+    runtimeVersion: 3.11.10
     rootDir: backend
-    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt --no-cache-dir 2>&1 | grep -v 'tiktoken' || true
+    buildCommand: pip install --upgrade pip setuptools && pip install -r requirements.txt --no-cache-dir
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHONUNBUFFERED
-        value: "true"
-      - key: PYTHONDONTWRITEBYTECODE
         value: "true"
       - key: SKILL_GAP_PROVIDER
         value: crewai_amp
