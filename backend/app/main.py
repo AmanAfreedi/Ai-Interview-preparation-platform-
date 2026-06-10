@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.roadmap import router as roadmap_router
 from app.api.skill_gap import router as skill_gap_router
 from app.config import get_settings
 
@@ -21,6 +22,7 @@ app.add_middleware(
 )
 
 app.include_router(skill_gap_router, prefix="/api")
+app.include_router(roadmap_router, prefix="/api")
 
 
 @app.get("/health")

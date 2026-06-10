@@ -18,6 +18,7 @@ import { useResumes } from '@/hooks/use-resumes'
 import { analyzeSkillGap } from '@/lib/api/skill-gap'
 import { ApiError, getApiBaseUrl } from '@/lib/api/client'
 import { getFirebaseAuth } from '@/lib/firebase/app'
+import { useSkillGapStore } from '@/stores/skill-gap-store'
 import { getResumeText } from '@/types/resume'
 import type { SkillGapAnalysis } from '@/types/skill-gap'
 import { cn } from '@/lib/utils'
@@ -28,6 +29,7 @@ export function SkillGapPage() {
   const { user, profile } = useAuth()
   const { resumes, loading: resumesLoading } = useResumes()
   const navigate = useNavigate()
+  const setLastAnalysis = useSkillGapStore((s) => s.setLastAnalysis)
 
   const readyResumes = useMemo(
     () => resumes.filter((r) => r.status === 'ready' && r.extractedText),
@@ -75,6 +77,7 @@ export function SkillGapPage() {
         idToken,
       )
       setResult(response.analysis)
+      setLastAnalysis(response.analysis)
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message)

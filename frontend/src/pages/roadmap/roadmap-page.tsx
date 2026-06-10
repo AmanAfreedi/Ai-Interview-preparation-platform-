@@ -4,6 +4,7 @@ import {
   Download,
   Loader2,
   Sparkles,
+  Target,
   X,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -23,6 +24,7 @@ import { useAuth } from '@/hooks/use-auth'
 import { buildRoadmap } from '@/lib/api/roadmap'
 import { ApiError, getApiBaseUrl } from '@/lib/api/client'
 import { getFirebaseAuth } from '@/lib/firebase/app'
+import { useSkillGapStore } from '@/stores/skill-gap-store'
 import { cn } from '@/lib/utils'
 
 /* ─── Skill tag chip ─────────────────────────────────────────────────────── */
@@ -149,6 +151,11 @@ export function RoadmapPage() {
   const location = useLocation()
   const prefillSkills = (location.state as { prefillSkills?: string } | null)?.prefillSkills ?? ''
 
+  // Skill gap store — available if user ran analysis earlier this session
+  const lastAnalysis = useSkillGapStore((s) => s.lastAnalysis)
+  const getGapSkills = useSkillGapStore((s) => s.getGapSkills)
+  const hasSkillGapData = Boolean(lastAnalysis)
+
   // Skills as array for chip UI
   const [skills, setSkills] = useState<string[]>(() =>
     prefillSkills
@@ -161,9 +168,9 @@ export function RoadmapPage() {
   const [error, setError] = useState<string | null>(null)
   const [markdown, setMarkdown] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [importedFromGap, setImportedFromGap] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // If navigated from skill-gap with pre-filled skills, show a hint banner
   const cameFromSkillGap = Boolean(prefillSkills)
 
   useEffect(() => {
@@ -171,6 +178,21 @@ export function RoadmapPage() {
       setSkills(prefillSkills.split(',').map((s) => s.trim()).filter(Boolean))
     }
   }, [prefillSkills])
+
+  function importFromSkillGap() {
+    const gapSkills = getGapSkills()
+    if (!gapSkills) return
+    const incoming = gapSkills.split(',').map((s) => s.trim()).filter(Boolean)
+    setSkills((prev) => {
+      const existing = new Set(prev.map((s) => s.toLowerCase()))
+      const newOnes = incoming.filter((s) => !existing.has(s.toLowerCase()))
+      return [...prev, ...newOnes]
+    })
+    setImportedFromGap(true)
+    // Clear the flag after 3s
+    setTimeout(() => setImportedFromGap(false), 3000)
+    inputRef.current?.focus()
+  }
 
   function addSkill(raw: string) {
     const parts = raw.split(',').map((s) => s.trim()).filter(Boolean)
@@ -263,11 +285,11 @@ export function RoadmapPage() {
       />
 
       {/* Pre-fill banner from skill-gap */}
-      {cameFromSkillGap && skills.length > 0 && (
+      {(cameFromSkillGap || importedFromGap) && skills.length > 0 && (
         <div className="flex max-w-2xl items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
           <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
           <p className="text-sm text-foreground/80">
-            Skills pre-filled from your skill gap analysis. Remove any you've already mastered and set your timeframe.
+            Skills imported from your skill gap analysis. Remove any you've already mastered and set your timeframe.
           </p>
         </div>
       )}
@@ -288,7 +310,26 @@ export function RoadmapPage() {
 
           {/* Skills chip input */}
           <div className="space-y-2">
-            <Label htmlFor="skill-input">Skills to learn</Label>
+            <div className="flex items-center justify-between gap-2">
+              <Label htmlFor="skill-input">Skills to learn</Label>
+              {hasSkillGapData && (
+                <button
+                  type="button"
+                  disabled={generating}
+                  onClick={importFromSkillGap}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 rounded-full border px-3 py-0.5 text-xs font-medium transition-all',
+                    importedFromGap
+                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : 'border-primary/30 bg-primary/5 text-primary hover:bg-primary/10',
+                    generating && 'pointer-events-none opacity-50',
+                  )}
+                >
+                  <Target className="size-3" />
+                  {importedFromGap ? 'Imported ✓' : 'Import from skill gap'}
+                </button>
+              )}
+            </div>
             <div
               className={cn(
                 'flex min-h-[80px] w-full flex-wrap gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs',
@@ -322,7 +363,6 @@ export function RoadmapPage() {
               Press Enter or comma to add each skill. Backspace removes the last one.
             </p>
           </div>
-
           {/* Days input */}
           <div className="space-y-2">
             <Label htmlFor="days-input">Days available</Label>
