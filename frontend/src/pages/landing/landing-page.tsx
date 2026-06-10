@@ -32,7 +32,7 @@ const features = [
     icon: Target,
     title: 'Skill Gap Analysis',
     description:
-      'Paste a job description and our 3-agent CrewAI crew tells you exactly where you match, what you're missing, and how to close the gap.',
+      'Paste a job description and our 3-agent CrewAI crew tells you exactly where you match, what you are missing, and how to close the gap.',
     accent: 'from-blue-500/15 to-cyan-500/5',
     iconColor: 'text-blue-500',
     iconBg: 'bg-blue-500/10',
@@ -62,7 +62,7 @@ const features = [
     icon: Mic,
     title: 'Mock Interview',
     description:
-      'Practice technical and HR rounds with an AI interviewer that adapts questions to the role you're targeting.',
+      'Practice technical and HR rounds with an AI interviewer that adapts questions to the role you are targeting.',
     accent: 'from-rose-500/15 to-pink-500/5',
     iconColor: 'text-rose-500',
     iconBg: 'bg-rose-500/10',
