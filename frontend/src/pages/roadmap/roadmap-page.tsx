@@ -24,6 +24,7 @@ import { useAuth } from '@/hooks/use-auth'
 import { buildRoadmap } from '@/lib/api/roadmap'
 import { ApiError, getApiBaseUrl } from '@/lib/api/client'
 import { getFirebaseAuth } from '@/lib/firebase/app'
+import { useRoadmapStore } from '@/stores/roadmap-store'
 import { useSkillGapStore } from '@/stores/skill-gap-store'
 import { cn } from '@/lib/utils'
 
@@ -151,22 +152,26 @@ export function RoadmapPage() {
   const location = useLocation()
   const prefillSkills = (location.state as { prefillSkills?: string } | null)?.prefillSkills ?? ''
 
+  // Roadmap store — persists output across navigation
+  const { lastMarkdown, lastSkills, lastDays, setLastRoadmap } = useRoadmapStore()
+
   // Skill gap store — available if user ran analysis earlier this session
   const lastAnalysis = useSkillGapStore((s) => s.lastAnalysis)
   const getGapSkills = useSkillGapStore((s) => s.getGapSkills)
   const hasSkillGapData = Boolean(lastAnalysis)
 
-  // Skills as array for chip UI
-  const [skills, setSkills] = useState<string[]>(() =>
-    prefillSkills
-      ? prefillSkills.split(',').map((s) => s.trim()).filter(Boolean)
-      : [],
-  )
+  // Skills as array for chip UI — restore from store or prefill from skill gap nav
+  const [skills, setSkills] = useState<string[]>(() => {
+    if (prefillSkills) return prefillSkills.split(',').map((s) => s.trim()).filter(Boolean)
+    if (lastSkills) return lastSkills.split(',').map((s) => s.trim()).filter(Boolean)
+    return []
+  })
   const [skillInput, setSkillInput] = useState('')
-  const [days, setDays] = useState('30')
+  const [days, setDays] = useState(() => lastDays || '30')
   const [generating, setGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [markdown, setMarkdown] = useState<string | null>(null)
+  // markdown comes from the store — survives navigation
+  const [markdown, setMarkdown] = useState<string | null>(() => lastMarkdown)
   const [copied, setCopied] = useState(false)
   const [importedFromGap, setImportedFromGap] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -239,7 +244,9 @@ export function RoadmapPage() {
         { skills: skills.join(', '), days: String(daysNum) },
         idToken,
       )
-      setMarkdown(response.roadmap_markdown)
+      const md = response.roadmap_markdown
+      setMarkdown(md)
+      setLastRoadmap(md, skills.join(', '), String(daysNum))
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message)

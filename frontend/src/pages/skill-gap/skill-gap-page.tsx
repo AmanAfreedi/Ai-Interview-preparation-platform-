@@ -30,6 +30,7 @@ export function SkillGapPage() {
   const { resumes, loading: resumesLoading } = useResumes()
   const navigate = useNavigate()
   const setLastAnalysis = useSkillGapStore((s) => s.setLastAnalysis)
+  const result = useSkillGapStore((s) => s.lastAnalysis)
 
   const readyResumes = useMemo(
     () => resumes.filter((r) => r.status === 'ready' && r.extractedText),
@@ -41,7 +42,6 @@ export function SkillGapPage() {
   const [jobDescription, setJobDescription] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [result, setResult] = useState<SkillGapAnalysis | null>(null)
 
   const selectedResume = readyResumes.find((r) => r.id === resumeId)
   const candidateName =
@@ -76,7 +76,6 @@ export function SkillGapPage() {
         },
         idToken,
       )
-      setResult(response.analysis)
       setLastAnalysis(response.analysis)
     } catch (err) {
       if (err instanceof ApiError) {
