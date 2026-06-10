@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import { ProtectedRoute, PublicRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
+import { LandingPage } from '@/pages/landing/landing-page'
 import { LoginPage } from '@/pages/auth/login-page'
 import { SignupPage } from '@/pages/auth/signup-page'
 import { ComingSoonPage } from '@/pages/coming-soon-page'
@@ -14,6 +15,9 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public landing page */}
+        <Route path="/" element={<LandingPage />} />
+
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -37,8 +41,7 @@ export function AppRouter() {
           </Route>
         </Route>
 
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   )
