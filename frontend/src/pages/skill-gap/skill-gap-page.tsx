@@ -1,5 +1,6 @@
-import { Loader2, Target } from 'lucide-react'
+import { BarChart3, Loader2, Target } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { PageHeader } from '@/components/layout/page-header'
 import { Button } from '@/components/ui/button'
@@ -26,6 +27,8 @@ const MIN_JD_LENGTH = 30
 export function SkillGapPage() {
   const { user, profile } = useAuth()
   const { resumes, loading: resumesLoading } = useResumes()
+  const navigate = useNavigate()
+
   const readyResumes = useMemo(
     () => resumes.filter((r) => r.status === 'ready' && r.extractedText),
     [resumes],
@@ -87,6 +90,16 @@ export function SkillGapPage() {
     } finally {
       setAnalyzing(false)
     }
+  }
+
+  function handleBuildRoadmap(analysis: SkillGapAnalysis) {
+    // Combine critical + preferred gaps and pass them to the roadmap page as pre-filled skills
+    const gapSkills = [
+      ...analysis.missing_skills.critical,
+      ...analysis.missing_skills.preferred,
+    ]
+    const skillsString = gapSkills.join(', ')
+    navigate('/roadmap', { state: { prefillSkills: skillsString } })
   }
 
   return (
@@ -191,12 +204,23 @@ export function SkillGapPage() {
         </CardContent>
       </Card>
 
-      {result && <SkillGapResults analysis={result} />}
+      {result && (
+        <SkillGapResults
+          analysis={result}
+          onBuildRoadmap={() => handleBuildRoadmap(result)}
+        />
+      )}
     </div>
   )
 }
 
-function SkillGapResults({ analysis }: { analysis: SkillGapAnalysis }) {
+function SkillGapResults({
+  analysis,
+  onBuildRoadmap,
+}: {
+  analysis: SkillGapAnalysis
+  onBuildRoadmap: () => void
+}) {
   return (
     <div className="flex max-w-3xl flex-col gap-4">
       <Card>
@@ -264,6 +288,16 @@ function SkillGapResults({ analysis }: { analysis: SkillGapAnalysis }) {
           </ol>
         </CardContent>
       </Card>
+
+      <Button
+        type="button"
+        size="lg"
+        onClick={onBuildRoadmap}
+        className="self-start"
+      >
+        <BarChart3 className="size-4" />
+        Build Roadmap
+      </Button>
     </div>
   )
 }

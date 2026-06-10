@@ -64,8 +64,16 @@ class CrewAIAmpClient:
         json_body: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         url = urljoin(self.base_url, path.lstrip("/"))
+        # Use a generous read timeout but a shorter connect timeout.
+        # AMP kickoff and status calls can take 30-90s to respond.
+        timeout = httpx.Timeout(
+            connect=15.0,
+            read=self.timeout_seconds,
+            write=15.0,
+            pool=5.0,
+        )
         try:
-            with httpx.Client(timeout=self.timeout_seconds) as client:
+            with httpx.Client(timeout=timeout) as client:
                 response = client.request(
                     method,
                     url,

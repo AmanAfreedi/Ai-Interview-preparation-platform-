@@ -7,6 +7,7 @@ import { SignupPage } from '@/pages/auth/signup-page'
 import { ComingSoonPage } from '@/pages/coming-soon-page'
 import { DashboardPage } from '@/pages/dashboard/dashboard-page'
 import { ResumePage } from '@/pages/resume/resume-page'
+import { RoadmapPage } from '@/pages/roadmap/roadmap-page'
 import { SkillGapPage } from '@/pages/skill-gap/skill-gap-page'
 
 export function AppRouter() {
@@ -23,10 +24,7 @@ export function AppRouter() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/resume" element={<ResumePage />} />
             <Route path="/skill-gap" element={<SkillGapPage />} />
-            <Route
-              path="/roadmap"
-              element={<ComingSoonPage title="Roadmap" />}
-            />
+            <Route path="/roadmap" element={<RoadmapPage />} />
             <Route path="/quiz" element={<ComingSoonPage title="Quiz" />} />
             <Route
               path="/mock-interview"

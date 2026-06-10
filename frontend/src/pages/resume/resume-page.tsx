@@ -1,9 +1,14 @@
+import { ArrowRight } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+
 import { PageHeader } from '@/components/layout/page-header'
 import { ResumeList } from '@/components/resume/resume-list'
 import { ResumeUploadZone } from '@/components/resume/resume-upload-zone'
+import { Button } from '@/components/ui/button'
 import { useResumes } from '@/hooks/use-resumes'
 
 export function ResumePage() {
+  const navigate = useNavigate()
   const {
     resumes,
     loading,
@@ -14,6 +19,8 @@ export function ResumePage() {
     remove,
     clearError,
   } = useResumes()
+
+  const hasReadyResume = resumes.some((r) => r.status === 'ready')
 
   return (
     <div className="flex flex-1 flex-col gap-8">
@@ -39,14 +46,26 @@ export function ResumePage() {
       </section>
 
       <section className="space-y-4">
-        <PageHeader
-          title="Saved resume text"
-          description={
-            resumes.length > 0
-              ? `${resumes.length} resume${resumes.length === 1 ? '' : 's'} ready for analysis`
-              : 'Parsed resumes appear here'
-          }
-        />
+        <div className="flex items-center justify-between gap-4">
+          <PageHeader
+            title="Saved resume text"
+            description={
+              resumes.length > 0
+                ? `${resumes.length} resume${resumes.length === 1 ? '' : 's'} ready for analysis`
+                : 'Parsed resumes appear here'
+            }
+          />
+          {hasReadyResume && (
+            <Button
+              type="button"
+              onClick={() => navigate('/skill-gap')}
+              className="shrink-0"
+            >
+              Go to Skill Gap
+              <ArrowRight className="size-4" />
+            </Button>
+          )}
+        </div>
         <ResumeList
           resumes={resumes}
           loading={loading}

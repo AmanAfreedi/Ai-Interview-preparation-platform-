@@ -36,7 +36,7 @@ def skill_gap_service_status() -> dict[str, object]:
     payload: dict[str, object] = {
         "provider": provider,
         "crewai_amp_configured": settings.crewai_amp_configured,
-        "local_openai_configured": bool(settings.openai_api_key.strip()),
+        "local_openai_configured": bool(settings.openai_api_key.strip()) if settings.openai_api_key else False,
         "mock_mode": provider == "mock",
     }
 
@@ -86,7 +86,7 @@ def analyze_skill_gap(body: SkillGapAnalyzeRequest) -> SkillGapAnalyzeResponse:
     except Exception as exc:
         raise HTTPException(
             status_code=500,
-            detail="Skill gap analysis failed. Check server logs.",
+            detail=f"Skill gap analysis failed: {type(exc).__name__}: {exc}",
         ) from exc
 
     if is_placeholder_analysis(analysis):
@@ -105,7 +105,7 @@ def _run_analysis(
     position_title: str | None,
 ):
     use_amp = provider == "crewai_amp" and settings.crewai_amp_configured
-    has_openai = bool(settings.openai_api_key.strip())
+    has_openai = bool(settings.openai_api_key.strip()) if settings.openai_api_key else False
 
     if use_amp:
         client = _get_amp_client()

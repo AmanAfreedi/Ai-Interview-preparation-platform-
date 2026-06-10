@@ -20,9 +20,13 @@ class Settings(BaseSettings):
     # CrewAI AMP (Required) — deployed crew on app.crewai.com
     crewai_skill_gap_base_url: str = ""
     crewai_skill_gap_bearer_token: str = ""
-    crewai_amp_poll_interval_seconds: float = 2.0
-    crewai_amp_poll_timeout_seconds: float = 300.0
-    crewai_amp_request_timeout_seconds: float = 60.0
+    crewai_amp_poll_interval_seconds: float = 3.0
+    crewai_amp_poll_timeout_seconds: float = 360.0
+    crewai_amp_request_timeout_seconds: float = 120.0
+
+    # Local crew fallback via OpenAI (optional)
+    openai_api_key: str = ""
+    openai_model_name: str = "gpt-4o-mini"
 
     api_host: str = "0.0.0.0"
     api_port: int = 8000
