@@ -61,7 +61,6 @@ export function SkillGapPage() {
 
     setAnalyzing(true)
     setError(null)
-    setResult(null)
 
     try {
       const idToken = await getFirebaseAuth().currentUser?.getIdToken()
